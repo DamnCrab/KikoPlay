@@ -297,6 +297,10 @@ jobs:
 
   build-windows:
     runs-on: windows-2022
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\.vcpkg-cache
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\.vcpkg-cache,readwrite
 
     steps:
     - name: Checkout repository
@@ -315,10 +319,18 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip" -OutFile onnxruntime-win-x64-1.22.0.zip
         Expand-Archive -Path onnxruntime-win-x64-1.22.0.zip -DestinationPath .
 
+    - name: Cache vcpkg artifacts
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.VCPKG_ROOT }}
+          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        key: windows-2022-vcpkg-protobuf-x64-windows-static-md-v1
+
     - name: Install protobuf with vcpkg
       shell: pwsh
       run: |
-        $vcpkgRoot = "$env:USERPROFILE\vcpkg"
+        $vcpkgRoot = "$env:VCPKG_ROOT"
         if (-not (Test-Path $vcpkgRoot)) {
           git clone https://github.com/microsoft/vcpkg $vcpkgRoot
         }
