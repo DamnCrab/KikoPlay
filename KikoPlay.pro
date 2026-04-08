@@ -739,6 +739,7 @@ win32 {
                 LIBS += -L$$clean_path($${PROTOBUF_DIR}/lib) -llibprotobuf
             }
         } else {
+            INCLUDEPATH += $$PWD/Service/pb
             debug {
                 LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lited
             } else {

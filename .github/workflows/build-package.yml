@@ -297,10 +297,6 @@ jobs:
 
   build-windows:
     runs-on: windows-2022
-    env:
-      VCPKG_ROOT: ${{ github.workspace }}\vcpkg
-      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\.vcpkg-cache
-      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\.vcpkg-cache,readwrite
 
     steps:
     - name: Checkout repository
@@ -318,25 +314,6 @@ jobs:
         choco install mpv aria2 -y
         Invoke-WebRequest -Uri "https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip" -OutFile onnxruntime-win-x64-1.22.0.zip
         Expand-Archive -Path onnxruntime-win-x64-1.22.0.zip -DestinationPath .
-
-    - name: Cache vcpkg artifacts
-      uses: actions/cache@v4
-      with:
-        path: |
-          ${{ env.VCPKG_ROOT }}
-          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-        key: windows-2022-vcpkg-protobuf-x64-windows-static-md-v1
-
-    - name: Install protobuf with vcpkg
-      shell: pwsh
-      run: |
-        $vcpkgRoot = "$env:VCPKG_ROOT"
-        if (-not (Test-Path $vcpkgRoot)) {
-          git clone https://github.com/microsoft/vcpkg $vcpkgRoot
-        }
-        & "$vcpkgRoot\bootstrap-vcpkg.bat" -disableMetrics
-        & "$vcpkgRoot\vcpkg.exe" install --classic protobuf:x64-windows-static-md
-        "PROTOBUF_DIR=$vcpkgRoot\installed\x64-windows-static-md" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup Qt
       uses: jurplel/install-qt-action@v4
