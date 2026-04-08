@@ -729,11 +729,13 @@ win32 {
     contains(DEFINES, KSERVICE) {
         PROTOBUF_DIR = $$(PROTOBUF_DIR)
         !isEmpty(PROTOBUF_DIR) {
-            INCLUDEPATH += $${PROTOBUF_DIR}/include
-            debug:exists($${PROTOBUF_DIR}/debug/lib/libprotobufd.lib) {
-                LIBS += -L$${PROTOBUF_DIR}/debug/lib -llibprotobufd
-            } else:exists($${PROTOBUF_DIR}/lib/libprotobuf.lib) {
-                LIBS += -L$${PROTOBUF_DIR}/lib -llibprotobuf
+            PROTOBUF_DIR = $$replace(PROTOBUF_DIR, \\\\, /)
+            PROTOBUF_DIR = $$clean_path($$PROTOBUF_DIR)
+            INCLUDEPATH += $$clean_path($${PROTOBUF_DIR}/include)
+            debug:exists($$clean_path($${PROTOBUF_DIR}/debug/lib/libprotobufd.lib)) {
+                LIBS += -L$$clean_path($${PROTOBUF_DIR}/debug/lib) -llibprotobufd
+            } else:exists($$clean_path($${PROTOBUF_DIR}/lib/libprotobuf.lib)) {
+                LIBS += -L$$clean_path($${PROTOBUF_DIR}/lib) -llibprotobuf
             }
         } else {
             debug {
