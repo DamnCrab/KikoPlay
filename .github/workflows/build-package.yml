@@ -311,9 +311,14 @@ jobs:
     - name: Install runtime dependencies
       shell: pwsh
       run: |
-        choco install mpv aria2 jom -y
+        choco install aria2 jom 7zip -y
         Invoke-WebRequest -Uri "https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip" -OutFile onnxruntime-win-x64-1.22.0.zip
         Expand-Archive -Path onnxruntime-win-x64-1.22.0.zip -DestinationPath .
+        Invoke-WebRequest -Uri "https://downloads.sourceforge.net/project/mpv-player-windows/libmpv/mpv-dev-x86_64-20260301-git-05fac7f.7z" -OutFile libmpv.7z
+        7z x libmpv.7z "-olibmpv-runtime" -y
+        if (-not (Test-Path "libmpv-runtime\\libmpv-2.dll")) {
+          throw "libmpv-2.dll not found after extracting runtime archive"
+        }
 
     - name: Setup Qt
       uses: jurplel/install-qt-action@v4
@@ -359,11 +364,7 @@ jobs:
         $onnxDir = Get-ChildItem -Directory onnxruntime-win-x64-* | Select-Object -First 1
         Copy-Item "$($onnxDir.FullName)\lib\*.dll" $dist
 
-        $mpvDlls = Get-ChildItem -Path "$env:ChocolateyInstall" -Recurse -Include "*mpv*.dll" -File
-        if (-not $mpvDlls) {
-          throw "mpv runtime DLL not found"
-        }
-        $mpvDlls | ForEach-Object { Copy-Item $_.FullName $dist -Force }
+        Copy-Item libmpv-runtime\libmpv-2.dll $dist -Force
 
         $aria2Exe = Get-ChildItem -Path "$env:ChocolateyInstall" -Recurse -Filter "aria2c.exe" -File | Select-Object -First 1
         if ($aria2Exe) {
