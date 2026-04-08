@@ -733,14 +733,14 @@ win32 {
             PROTOBUF_DIR = $$replace(PROTOBUF_DIR, \\\\, /)
             PROTOBUF_DIR = $$clean_path($$PROTOBUF_DIR)
             INCLUDEPATH += $$clean_path($${PROTOBUF_DIR}/include)
-            debug:exists($$clean_path($${PROTOBUF_DIR}/debug/lib/libprotobufd.lib)) {
+            CONFIG(debug, debug|release):exists($$clean_path($${PROTOBUF_DIR}/debug/lib/libprotobufd.lib)) {
                 LIBS += -L$$clean_path($${PROTOBUF_DIR}/debug/lib) -llibprotobufd
             } else:exists($$clean_path($${PROTOBUF_DIR}/lib/libprotobuf.lib)) {
                 LIBS += -L$$clean_path($${PROTOBUF_DIR}/lib) -llibprotobuf
             }
         } else {
             INCLUDEPATH += $$PWD/Service/pb
-            debug {
+            CONFIG(debug, debug|release) {
                 LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lited
             } else {
                 LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lite

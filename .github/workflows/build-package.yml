@@ -311,7 +311,7 @@ jobs:
     - name: Install runtime dependencies
       shell: pwsh
       run: |
-        choco install mpv aria2 -y
+        choco install mpv aria2 jom -y
         Invoke-WebRequest -Uri "https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip" -OutFile onnxruntime-win-x64-1.22.0.zip
         Expand-Archive -Path onnxruntime-win-x64-1.22.0.zip -DestinationPath .
 
@@ -343,7 +343,7 @@ jobs:
       run: |
         call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         qmake build.pro CONFIG+=release
-        nmake
+        jom /J %NUMBER_OF_PROCESSORS%
 
     - name: Bundle Windows package
       shell: pwsh
