@@ -18,6 +18,7 @@ win32 {
 }
 macx {
     ICON = res/macos/kikoplay.icns
+    QMAKE_TARGET_BUNDLE_PREFIX = io.github.DamnCrab
 }
 
 TRANSLATIONS += res/lang/zh_Hans.ts

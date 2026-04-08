@@ -171,7 +171,7 @@ static QString get_color_profile(HWND hwnd)
 #endif
 
 static QSet<QString> optionsBeforeInit{"config", "config-dir", "input-conf", "load-scripts", "script", "scripts",
-                                       "hwdec", "gpu-context", "vo", "terminal", "keep-open"};
+                                       "hwdec", "gpu-context", "vo", "terminal", "keep-open", "icc-profile-auto"};
 
 }
 MPVPlayer::MPVPlayer(QWidget *parent) : QOpenGLWidget(parent),state(PlayState::Stop),
@@ -188,6 +188,10 @@ MPVPlayer::MPVPlayer(QWidget *parent) : QOpenGLWidget(parent),state(PlayState::S
     optionsMap["gpu-context"] = "cocoa";
     optionsMap["hwdec"] = "no";
     optionsMap["vo"] = "libmpv";
+    if (!optionsMap.contains("icc-profile-auto"))
+    {
+        optionsMap["icc-profile-auto"] = "yes";
+    }
 #endif
     for(auto iter = optionsMap.cbegin(); iter != optionsMap.cend(); ++iter)
     {
