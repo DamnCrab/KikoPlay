@@ -214,7 +214,7 @@ jobs:
         mkdir -p KikoPlay.app/Contents/MacOS/extension/script
         cp -R KikoPlayScript/danmu KikoPlayScript/match KikoPlayScript/library KikoPlayScript/resource KikoPlayScript/bgm_calendar KikoPlay.app/Contents/MacOS/extension/script/
 
-        macdeployqt KikoPlay.app -no-codesign
+        macdeployqt KikoPlay.app
         dylibbundler -od -b \
           -x KikoPlay.app/Contents/MacOS/KikoPlay \
           -d KikoPlay.app/Contents/Frameworks \
@@ -305,7 +305,7 @@ jobs:
       run: |
         call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         qmake build.pro CONFIG+=release
-        nmake /J %NUMBER_OF_PROCESSORS%
+        nmake
 
     - name: Bundle Windows package
       shell: pwsh
