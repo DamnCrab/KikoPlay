@@ -196,7 +196,7 @@ jobs:
         modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets'
 
     - name: Import signing certificate
-      if: ${{ secrets.MACOS_CERTIFICATE_P12 != '' && secrets.MACOS_CERTIFICATE_PASSWORD != '' && secrets.MACOS_SIGNING_IDENTITY != '' }}
+      if: ${{ env.MACOS_SIGNING_IDENTITY != '' }}
       env:
         MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
         MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
@@ -272,7 +272,7 @@ jobs:
         fi
 
     - name: Notarize macOS package
-      if: ${{ secrets.MACOS_SIGNING_IDENTITY != '' && secrets.APPLE_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' && secrets.APPLE_TEAM_ID != '' }}
+      if: ${{ env.MACOS_SIGNING_IDENTITY != '' && env.APPLE_ID != '' && env.APPLE_APP_SPECIFIC_PASSWORD != '' && env.APPLE_TEAM_ID != '' }}
       run: |
         xcrun notarytool submit kikoplay-macos-arm64.dmg \
           --apple-id "$APPLE_ID" \
