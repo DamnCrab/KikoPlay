@@ -12,8 +12,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = KikoPlay
 TEMPLATE = app
-RC_FILE += kikoplay.rc
-RC_ICONS = kikoplay.ico
+win32 {
+    RC_FILE += kikoplay.rc
+    RC_ICONS = kikoplay.ico
+}
+macx {
+    ICON = res/macos/kikoplay.icns
+}
 
 TRANSLATIONS += res/lang/zh_Hans.ts
 DEFINES += QT_MESSAGELOGCONTEXT
@@ -693,7 +698,7 @@ contains(DEFINES, KSERVICE) {
         Service/pb/service.pb.h \
 
     INCLUDEPATH += \
-        Service/pb
+        Service
 
 }
 
@@ -722,18 +727,47 @@ win32 {
         LIBS += -L$$PWD/lib/x64/ -lonnxruntime
     }
     contains(DEFINES, KSERVICE) {
-        debug {
-            LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lited
+        PROTOBUF_DIR = $$(PROTOBUF_DIR)
+        !isEmpty(PROTOBUF_DIR) {
+            INCLUDEPATH += $${PROTOBUF_DIR}/include
+            debug:exists($${PROTOBUF_DIR}/debug/lib/libprotobufd.lib) {
+                LIBS += -L$${PROTOBUF_DIR}/debug/lib -llibprotobufd
+            } else:exists($${PROTOBUF_DIR}/lib/libprotobuf.lib) {
+                LIBS += -L$${PROTOBUF_DIR}/lib -llibprotobuf
+            }
         } else {
-            LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lite
+            debug {
+                LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lited
+            } else {
+                LIBS += -L$$PWD/lib/x64/ -llibprotobuf-lite
+            }
         }
     }
 }
 
 # UNIX related settings
 macx {
-    LIBS += -L/usr/lib -L/usr/local/lib -L/opt/local/lib -L$$PWD/lib/mac
-    LIBS += -llua5.3
+    LIBS += -L/usr/lib -L/usr/local/lib -L/opt/local/lib -L/opt/homebrew/lib -L$$PWD/lib/mac
+    LIBS += -llua53
+    LIBS += -lonnxruntime
+    contains(DEFINES, KSERVICE) {
+        PROTOBUF21_INCLUDE =
+        PROTOBUF21_LIB =
+        exists(/usr/local/protobuf/include/google/protobuf/message_lite.h) {
+            PROTOBUF21_INCLUDE = /usr/local/protobuf/include
+            PROTOBUF21_LIB = /usr/local/protobuf/lib
+        } else: exists(/opt/homebrew/opt/protobuf@21/include/google/protobuf/message_lite.h) {
+            PROTOBUF21_INCLUDE = /opt/homebrew/opt/protobuf@21/include
+            PROTOBUF21_LIB = /opt/homebrew/opt/protobuf@21/lib
+        } else: exists(/opt/homebrew/opt/protobuf/include/google/protobuf/message_lite.h) {
+            PROTOBUF21_INCLUDE = /opt/homebrew/opt/protobuf/include
+            PROTOBUF21_LIB = /opt/homebrew/opt/protobuf/lib
+        }
+        !isEmpty(PROTOBUF21_INCLUDE) {
+            INCLUDEPATH += $$PROTOBUF21_INCLUDE
+            LIBS += $$PROTOBUF21_LIB/libprotobuf.dylib
+        }
+    }
 }
 
 linux-g++* {
@@ -749,7 +783,8 @@ linux-g++* {
     LIBS += -lm -ldl
     LIBS += -L/usr/local/lib -lonnxruntime
     contains(DEFINES, KSERVICE) {
-        LIBS += -L/usr/local/protobuf/lib -l:libprotobuf-lite.a
+        CONFIG += link_pkgconfig
+        PKGCONFIG += protobuf
     }
 }
 
