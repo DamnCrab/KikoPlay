@@ -314,7 +314,7 @@ jobs:
         choco install aria2 jom 7zip -y
         Invoke-WebRequest -Uri "https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip" -OutFile onnxruntime-win-x64-1.22.0.zip
         Expand-Archive -Path onnxruntime-win-x64-1.22.0.zip -DestinationPath .
-        Invoke-WebRequest -Uri "https://downloads.sourceforge.net/project/mpv-player-windows/libmpv/mpv-dev-x86_64-20260301-git-05fac7f.7z" -OutFile libmpv.7z
+        curl.exe -L --retry 5 --retry-delay 5 --fail "https://downloads.sourceforge.net/project/mpv-player-windows/libmpv/mpv-dev-x86_64-20260301-git-05fac7f.7z" -o libmpv.7z
         7z x libmpv.7z "-olibmpv-runtime" -y
         if (-not (Test-Path "libmpv-runtime\\libmpv-2.dll")) {
           throw "libmpv-2.dll not found after extracting runtime archive"
